@@ -24,49 +24,27 @@ class LoginPageState extends State<LoginPage> {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference users = firestore.collection('users');
 
-    //memvalidasi data dari firebase
+    //memvalidasi data dari firebasee
     Future<String> loginUser(String usr, String pwd) async {
-      try {
-        final snapshot = await users
-          .where('username', isEqualTo: usr)
-          .where('password', isEqualTo: pwd)
-          .get();
+      final snapshot = await users
+        .where('username', isEqualTo: usr)
+        .where('password', isEqualTo: pwd)
+        .get();
 
-        if(snapshot.docs.isNotEmpty) {
-          // snapshot.docs.first.data();
-          // ignore: use_build_context_synchronously
-          Navigator.push(
-            context, MaterialPageRoute(builder: (context) 
-              {return const BarPage();}, 
-            ),
-          );
-          return usr;
-        }else {
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Logged in unsuccessfully'))
-          );
-        }
-
-      } catch (e) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: Text(e.toString()),
-              actions: [
-                GestureDetector(
-                  child: const Text('OK'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
+      if(snapshot.docs.isNotEmpty) {
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+          context, MaterialPageRoute(builder: (context) 
+            {return const BarPage();}, 
+          ),
         );
-      } 
+        return usr;
+      }else {
+        // ignore: use_build_context_synchronously
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Logged in unsuccessfully'))
+        );
+      }
       return '';
     }
 
