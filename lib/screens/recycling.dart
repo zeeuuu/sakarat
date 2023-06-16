@@ -1,62 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:input_quantity/input_quantity.dart';
-// import 'package:tubes/screens/local_notif_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RecyclePage extends StatefulWidget {
-  const RecyclePage({super.key});
+  final String username;
+
+  const RecyclePage({super.key, 
+    required this.username
+  });
 
   @override
-  // ignore: library_private_types_in_public_api
   RecyclePageState createState() => RecyclePageState();
-
 }
 
 class RecyclePageState extends State<RecyclePage> {
-  
-  final List img = [
+
+  final List<String> img = [
     'kertas.jpg',
     'plastik.jpg',
-    'karton.jpg',
     'tekstil.jpg',
     'kaca.jpg',
-    'alumunium.jpg',
     'minyak.jpg',
     'elektronik.jpg',
-    'skincare.jpg',
-    'lain.jpg'
-  ];
-  
-  final List title = [
-    "Kertas",
-    "Plastik",
-    "Karton",
-    "Tekstil",
-    "Kaca",
-    "Alumunium",
-    "Minyak Jelatah",
-    "Electronic",
-    "Skincare",
-    "Lain-lain"
   ];
 
-  final List point= [
-    "300",
-    "150",
-    "100",
+  final List<String> title = [
+    "Kertas",
+    "Plastik",
+    "Tekstil",
+    "Kaca",
+    "Minyak Jelatah",
+    "Electronic",
+  ];
+
+  final List<String> point = [
+    "15",
+    "10",
     "30",
-    "350",
-    "250",
     "25",
-    "500",
+    "50",
     "10"
   ];
 
+  List<int> quantities = [];
+
+  @override
+  void initState() {
+    super.initState();
+    quantities = List<int>.filled(title.length, 0);
+  }
+
   @override
   Widget build(BuildContext context) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance; //inisiasi
+    CollectionReference detail = firestore.collection('orderDetails'); //ngambil collection dgn nama orderdetails
+    
+    //untuk perhitungan 
+    int total = 0;
+    for (int i = 0; i < quantities.length; i++) {
+      total += quantities[i] * int.parse(point[i]);
+    }
+
+    //untuk menyimpan ke firebase
+    Future<void> saveDetail(List<String> selectedItems, int total) { 
+      // ignore: unused_local_variable
+      return detail.add({ //buat doc baru
+        'acc' : widget.username,
+        'selected_items': selectedItems,
+        'total': total,
+      });
+    }
 
     Size x = MediaQuery.of(context).size;
-    
+
     return Scaffold(
+
       body: Column(
         children: <Widget>[
 
@@ -67,9 +85,9 @@ class RecyclePageState extends State<RecyclePage> {
               image: DecorationImage(
                 fit: BoxFit.fill,
                 image: AssetImage("assets/images/top.png"),
-              )
+              ),
             ),
-            
+
             child: Container(
               margin: const EdgeInsets.fromLTRB(20, 30, 20, 65),
               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -78,13 +96,12 @@ class RecyclePageState extends State<RecyclePage> {
                 color: Colors.white,
                 boxShadow: const [
                   BoxShadow(
-                    color: Color.fromRGBO(140,213,167,1.0),
+                    color: Color.fromRGBO(140, 213, 167, 1.0),
                     blurRadius: 4,
-                    offset: Offset(1,4),
+                    offset: Offset(1, 4),
                   ),
                 ],
               ),
-
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: const [
@@ -101,29 +118,31 @@ class RecyclePageState extends State<RecyclePage> {
           ),
 
           Expanded(
+
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
               itemCount: title.length,
               itemBuilder: (context, index) {
-              
                 return Card(
                   child: Column(
                     children: [
+
                       ListTile(
                         leading: CircleAvatar(
                           radius: 35,
                           backgroundColor: Colors.transparent,
-                          backgroundImage: AssetImage("assets/images/sampah/${img[index]}")
+                          backgroundImage: AssetImage(
+                              "assets/images/sampah/${img[index]}"),
                         ),
 
                         title: Text(
-                          title[index], 
-                          style: const TextStyle(fontSize: 21)
+                          title[index],
+                          style: const TextStyle(fontSize: 21),
                         ),
 
-                        subtitle:Text(
+                        subtitle: Text(
                           "${point[index]} / kg",
-                          style: const TextStyle(fontSize: 16)
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
 
@@ -134,15 +153,20 @@ class RecyclePageState extends State<RecyclePage> {
                           isIntrinsicWidth: true,
                           borderShape: BorderShapeBtn.circle,
                           boxDecoration: const BoxDecoration(),
-                          onQtyChanged: (num? value) {  },
+                          onQtyChanged: (num? value) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              setState(() {
+                                quantities[index] = value?.toInt() ?? 0;
+                              });
+                            });
+                          },
                         ),
                       ),
+
                     ],
-
-                  )
+                  ),
                 );
-
-              }
+              },
             ),
           ),
 
@@ -150,9 +174,9 @@ class RecyclePageState extends State<RecyclePage> {
             padding: const EdgeInsets.fromLTRB(130, 20, 150, 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text(
-                  'Total :', 
+              children: [
+                const Text(
+                  'Total :',
                   style: TextStyle(
                     fontSize: 18,
                     letterSpacing: 2,
@@ -160,13 +184,13 @@ class RecyclePageState extends State<RecyclePage> {
                   ),
                 ),
                 Text(
-                  '0', 
-                  style: TextStyle(
+                  total.toStringAsFixed(1),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              ],          
+              ],
             ),
           ),
 
@@ -182,30 +206,107 @@ class RecyclePageState extends State<RecyclePage> {
                 ),
                 elevation: 15,
               ),
-              onPressed: () {
-                // LocalNotificationService().showNotification(
-                //   title: 'SAKARAT',
-                //   body: 'Pengajuan drop diterima',
-                // );
-              },
-             child: const Padding(
-              padding: EdgeInsets.all(5),
-              child: Text(
-                'Drop',
-                style: TextStyle(
-                  color: Colors.white, 
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                )
+
+              onPressed: () async {
+                List<String> selectedItems = [];
+                for (int i = 0; i < quantities.length; i++) {
+                  if (quantities[i] > 0) {
+                    selectedItems.add("${title[i]} : ${quantities[i]}");
+                  }
+                }
+
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text(
+                        'DETAIL SAMPAH', 
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 21,
+                        ),
+                      ),
+                      content: Column(
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (String item in selectedItems)
+                            Column(
+                              children: [
+                                Text("$item kg",
+                                  style: const TextStyle(fontSize: 18)
+                                ),
+                                const SizedBox(height: 5), // Jarak antar teks
+                              ],
+                            ),
+                          const SizedBox(height: 20),
+                          Text(
+                            'Total point: $total',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 21,
+                              color: Colors.green,
+                            ),
+                          ),
+                          const SizedBox(height: 25),
+                          const Text(
+                            'Pastikan alamat pengambilan benar',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    );
+                  },
+
+                ).then((value) {
+                  if (total == 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Select your trash first'),
+                      ),
+                    );
+                  } else{ 
+                    saveDetail(selectedItems, total);
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Drop Successful'),
+                    ),
+                  );
+                  }
+                });
+              },        
+
+              child: const Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  'Drop',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             )
-            ),
           ),
           const SizedBox(height: 20),
 
         ],
       ),
-
     );
+
   }
 }

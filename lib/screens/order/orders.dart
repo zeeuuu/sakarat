@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:tubes/screens/order/history.dart';
-import 'package:tubes/screens/order/ongoing.dart';
+import 'history.dart';
+import 'ongoing.dart';
+import 'package:tubes/listvariables.dart' as listvariable;
 
 class OrderPage extends StatefulWidget {
-  const OrderPage({super.key});
+  final String username;
+
+  const OrderPage({super.key, 
+    required this.username
+  });
 
   @override
-  // ignore: library_private_types_in_public_api
   OrderPageState createState() => OrderPageState();
-
 }
 
-class OrderPageState extends State<OrderPage> {
+class OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +30,9 @@ class OrderPageState extends State<OrderPage> {
 
       body: DefaultTabController(
         length: 2,
-        // ignore: sort_child_properties_last
         child: Scaffold(
-          appBar: AppBar(
 
+          appBar: AppBar(
             backgroundColor: Colors.white,
             title: const Text(
               'ORDERS',
@@ -32,31 +41,31 @@ class OrderPageState extends State<OrderPage> {
                 letterSpacing: 2,
                 fontSize: 21,
                 fontWeight: FontWeight.bold,
-              )
+              ),
             ),
-            
-            bottom: const TabBar(
+
+            bottom: TabBar(
+              controller: _tabController,
               labelColor: Colors.green,
               indicatorWeight: 3,
-              // indicatorColor: Colors.green,
-              tabs: [
+              tabs: const [
                 Tab(text: 'Ongoing Orders'),
                 Tab(text: 'History'),
               ],
             ),
-            
           ),
 
-          body: const TabBarView(
+          body: TabBarView(
+            controller: _tabController,
             children: [
-              OngPage(),
-              HistoryPage(),              
+              const OngPage(),
+              HistoryPage(order: const {}, status: '', username: listvariable.username),
             ],
           ),
 
         ),
       ),
-
     );
+
   }
 }

@@ -3,7 +3,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String username;
+
+  const HomePage({super.key, 
+    required this.username
+  });
 
   @override
   // ignore: library_private_types_in_public_api
@@ -148,7 +152,7 @@ class HomePageState extends State<HomePage> {
                     subtitle: const Text("Peningkatan Sampah Terjadi Usai Lebaran"),
                     trailing: const Icon(Icons.arrow_forward),
                     onTap: () async {
-                      const url = 'https://www.instagram.com';
+                      const url = 'https://caritau.com/post/peningkatan-sampah-terjadi-usai-lebaran';
                       if (!await launchUrl(Uri.parse(url))) {
                         throw 'Could not launch $url';
                       }
@@ -173,8 +177,7 @@ class HomePageState extends State<HomePage> {
                     subtitle: const Text("Bank Sampah Diharapkan Tingkatkan Konversi Sampah Jadi Pendapatan"),
                     trailing: const Icon(Icons.arrow_forward),
                     onTap: () async {
-                      // const url = 'https://portal.pemkomedan.go.id/berita/bank-sampah-diharapkan-tingkatkan-penerapan-konversi-sampah-jadi-pendapatan__read2881.html';
-                      const url = 'https://www.twitter.com';
+                      const url = 'https://portal.pemkomedan.go.id/berita/bank-sampah-diharapkan-tingkatkan-penerapan-konversi-sampah-jadi-pendapatan__read2881.html';
                       if (!await launchUrl(Uri.parse(url))) {
                         throw 'Could not launch $url';
                       }

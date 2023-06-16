@@ -1,7 +1,10 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:tubes/screens/bar.dart';
 import 'package:tubes/screens/login&regist/register.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tubes/listvariables.dart' as listvariable;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,27 +28,30 @@ class LoginPageState extends State<LoginPage> {
     CollectionReference users = firestore.collection('users');
 
     //memvalidasi data dari firebasee
-    Future<String> loginUser(String usr, String pwd) async {
-      final snapshot = await users
+    Future<String> loginUser(String usr, String pwd) async { //akan mengembalikan string
+      final snapshot = await users //snapshot akan menampung hasil get 
         .where('username', isEqualTo: usr)
         .where('password', isEqualTo: pwd)
         .get();
 
-      if(snapshot.docs.isNotEmpty) {
+      if(snapshot.docs.isNotEmpty) { //memerika data yg ditemukan sebelumnya, jika tdk kosong
+        // ignore: unused_local_variable
+        var loggedInUserId = snapshot.docs[0].id;
+        listvariable.username = usr;
         // ignore: use_build_context_synchronously
         Navigator.push(
           context, MaterialPageRoute(builder: (context) 
-            {return const BarPage();}, 
+            {return BarPage(username: usr);}, 
           ),
         );
         return usr;
-      }else {
+      }else { //jika tdk ditemukan
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Logged in unsuccessfully'))
         );
+        return ''; //akan mengembalikan fungsi kosong
       }
-      return '';
     }
 
     Size x = MediaQuery.of(context).size; 

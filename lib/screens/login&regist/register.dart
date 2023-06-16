@@ -28,16 +28,16 @@ class RegistPageState extends State<RegistPage> {
 
     //menambahkan data
     Future<void> registerUser() {
-      return users.add({
-        "username": username.text,
+      return users.add({  //mengembalikan collection dengan penambahan data
+        "username": username.text, //usr akan diisi username.text dari inputan
         "email": email.text,
         "phone": phone.text,
         "password": password.text,
-      }).then((value) {
+      }).then((value) { //dieksekusi ketika future selesai
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Successfully Registration'))
-        );
-        username.clear();
+        ); //menampilkan pesan
+        username.clear(); //menghapus text yg sebelumnya diinputkan
         email.clear();
         phone.clear();
         password.clear();
@@ -192,51 +192,6 @@ class RegistPageState extends State<RegistPage> {
                         ), 
                       );
                     }
-
-                  //   //menampilkan pesan notes
-                  //   showDialog(
-                  //     context: context,
-                  //     builder: (BuildContext context){
-                  //       return AlertDialog(
-                  //         title: const Text('Congratss'),
-                  //         content: Container(
-                  //           width: 100,
-                  //           height: 110,
-                  //           padding: const EdgeInsets.all(5),
-                  //           child: Column(
-                  //             children: const [
-                  //               Text(
-                  //                 'Kamu sekarang jadi bagian dari SAKARAT\n',
-                  //                 textAlign: TextAlign.center,
-                  //                 style: TextStyle(
-                  //                   fontSize: 21, 
-                  //                   color: Colors.green,
-                  //                   wordSpacing: 1,
-                  //                 ),
-                  //               ),
-                  //               Text(
-                  //                 'Yuk, mulai pilah sampah',
-                  //                 textAlign: TextAlign.center,
-                  //                 style: TextStyle(fontSize: 16)
-                  //               ),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //         actions: [
-                  //           TextButton(
-                  //             onPressed: (){
-                  //               Navigator.push(
-                  //                 context, MaterialPageRoute(builder: (context) 
-                  //                   {return const LoginPage();}, 
-                  //                 ), 
-                  //               );
-                  //             },
-                  //             child: const Text('NEXT'),              
-                  //           ),
-                  //         ],
-                  //       );
-                  //     },
-                  //   );
                   },
 
                   child: const Text(

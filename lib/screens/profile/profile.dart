@@ -1,13 +1,23 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tubes/screens/login&regist/welcome.dart';
 import 'package:tubes/screens/poin/poin.dart';
 import 'package:tubes/screens/profile/about.dart';
 import 'package:tubes/screens/profile/account.dart';
-import 'package:tubes/screens/profile/address.dart';
+import 'package:tubes/screens/profile/delacc.dart';
+import 'package:tubes/listvariables.dart' as listvariable;
 
 class ProfileState extends StatelessWidget {
-  const ProfileState({super.key});
+  final String username;
+
+  ProfileState({super.key, 
+    required this.username
+  });
+
+  final email = TextEditingController();
+  final password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +27,7 @@ class ProfileState extends StatelessWidget {
       child: Column(
         children: [
           
-          const ProfilePict(),
+          ProfilePict(),
           const SizedBox(height: 25),
           GestureDetector(
             onTap: () => Get.to(const PoinPage()),
@@ -77,14 +87,7 @@ class ProfileState extends StatelessWidget {
             text: "My Account",
             icon: const Icon(Icons.boy_rounded),
             press: () => {
-              Get.to(const AccountPage()),
-            },
-          ),
-          ProfileMenu(
-            text: "My Address",
-            icon: const Icon(Icons.cabin),
-            press: () {
-              Get.to(const AdrPage());
+              Get.to(() => AccountPage(username: listvariable.username)),
             },
           ),
           ProfileMenu(
@@ -93,6 +96,48 @@ class ProfileState extends StatelessWidget {
             press: () {
               Get.to(const AboutPage());
             },
+          ),
+          ProfileMenu(
+            text: "Delete Account",
+            icon: const Icon(Icons.person_remove),
+            press: () {
+
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+
+                  return AlertDialog(
+                    title: const Text(
+                      'Konfirmasi Hapus Akun', 
+                      textAlign: TextAlign.center
+                    ),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Text('Yakin ingin menghapus akun?'),
+                        SizedBox(height: 16.0),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text('Tidak'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Ya'),
+                        onPressed: () {
+                          Get.to(const DelAcc());
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+
           ),
           ProfileMenu(
             text: "Log Out",
@@ -154,8 +199,19 @@ class ProfileMenu extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class ProfilePict extends StatelessWidget {
-  const ProfilePict({super.key});
+  ProfilePict({Key? key}) : super(key: key);
+
+  File? _pp;
+  Future<void> _editProfile() async {
+    final foto = ImagePicker();
+    // ignore: deprecated_member_use
+    final pick = await foto.getImage(source: ImageSource.gallery);
+    if (pick != null) {
+      _pp = File(pick.path);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,8 +224,11 @@ class ProfilePict extends StatelessWidget {
         fit: StackFit.expand,
         clipBehavior: Clip.none,
         children: [
-          const CircleAvatar(
-            backgroundImage: AssetImage('assets/images/dp.jpg'),
+          CircleAvatar(
+            backgroundImage: _pp != null ? FileImage(_pp!) : null,
+            child: _pp == null
+                ? const Icon(Icons.person, size: 50) // ikon default jika tidak ada foto yang dipilih
+                : null,
           ),
           Positioned(
             right: -16,
@@ -184,7 +243,7 @@ class ProfilePict extends StatelessWidget {
                 backgroundColor: const Color(0xFFF5F6F9),
               ),
               onPressed: () {
-                //edit gambar
+                _editProfile();
               },
               child: const Icon(Icons.camera_alt_outlined)
             ),   
