@@ -1,8 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tubes/listvariables.dart' as listvariable;
 
 class OngPage extends StatefulWidget {
-  const OngPage({Key? key}) : super(key: key);
+  final String username;
+
+  const OngPage({super.key, 
+    required this.username
+  });
 
   @override
   OngPageState createState() => OngPageState();
@@ -11,40 +15,23 @@ class OngPage extends StatefulWidget {
 class OngPageState extends State<OngPage> {
   List<Map<String, dynamic>> order = [];
   List<Map<String, dynamic>> history = [];
-  
-  CollectionReference detail = FirebaseFirestore.instance.collection('orderDetails');
-
-  // Future<void> ambilData() async {
-  //   QuerySnapshot<Map<String, dynamic>> snapshot = detail.get() as QuerySnapshot<Map<String, dynamic>>;
-  //   if (snapshot.docs.isNotEmpty) {
-  //     setState(() {
-  //       order = snapshot.docs.map((doc) => doc.data()).toList();
-  //     });
-  //   }
-  // }
 
   @override
   void initState() {
     super.initState();
-    // ambilData();
+
+    //Add some dummy data to the history list
+    order.add({
+      'id': '#001',
+      'date': '27 Nov 2022',
+      'point': '+300',
+    });
+    order.add({
+      'id': '#002',
+      'date': '31 Jan 2023',
+      'point': '+32',
+    });
   }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   //Add some dummy data to the history list
-  //   order.add({
-  //     'id': '#001',
-  //     'date': '27 Nov 2022',
-  //     'point': '+300',
-  //   });
-  //   order.add({
-  //     'id': '#002',
-  //     'date': '31 Jan 2023',
-  //     'point': '+32',
-  //   });
-  // }
 
   void statOrder(int index) {
     setState(() {
@@ -63,7 +50,7 @@ class OngPageState extends State<OngPage> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
 
-            child: order.isEmpty ? //cek history 
+            child: order.isEmpty ?
               Container(
                 margin: const EdgeInsets.only(top: 30),
                 width: double.infinity,
@@ -101,6 +88,8 @@ class OngPageState extends State<OngPage> {
                           autofocus: true,
                           title: Text(
                             item['id'], 
+                            // '#00',
+                            // listvariable.data as String, 
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               wordSpacing: 1,
@@ -109,12 +98,14 @@ class OngPageState extends State<OngPage> {
                           ),
                           subtitle: Text(
                             item['date'], 
+                            // listvariable.tanggal, 
                             style: const TextStyle(
                               fontSize: 14
                             )
                           ),
                           trailing: Text(
-                             item['point'], 
+                            item['point'], 
+                            // listvariable.total as String, 
                             style: const TextStyle(
                               color: Colors.blue,
                               fontSize: 16,
@@ -141,9 +132,7 @@ class OngPageState extends State<OngPage> {
                                   ),
                                   onPressed: () {
                                     statOrder(index);
-                                    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)
-                                    //  => OrderPage(order: item, status: 'Failed'),
-                                    // ));
+                                    listvariable.status = false;
                                   },
                                   child: const Padding(
                                     padding: EdgeInsets.all(5),
@@ -173,9 +162,7 @@ class OngPageState extends State<OngPage> {
                                   ),
                                   onPressed: () {
                                     statOrder(index);
-                                    // Navigator.push(context, MaterialPageRoute(builder: (context)
-                                    //  => OrderPage(order: item, status: 'Success'),
-                                    // ));
+                                    listvariable.status = true;
                                   },
                                   child: const Padding(
                                     padding: EdgeInsets.all(5),

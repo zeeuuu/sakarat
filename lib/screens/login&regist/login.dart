@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tubes/screens/bar.dart';
 import 'package:tubes/screens/login&regist/register.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:tubes/listvariables.dart' as listvariable;
+import 'package:tubes/listvariables.dart' as listvariable; //penghubung
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

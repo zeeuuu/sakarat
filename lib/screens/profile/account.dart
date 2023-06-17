@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:tubes/listvariables.dart';
+import '../login&regist/welcome.dart';
 
 class AccountPage extends StatefulWidget {
   final String username;
@@ -16,46 +20,61 @@ class AccountPage extends StatefulWidget {
 class AccountPageState extends State<AccountPage> {
   final _formKey = GlobalKey<FormState>(); 
 
-  late TextEditingController _username; //late agar memungkinkan dapat diubah
-  final email = TextEditingController(); //email pengguna tidak boleh berubah
+  late TextEditingController _username; 
+  late TextEditingController _email; //late agar memungkinkan dapat diubah
   late TextEditingController _phone;
   late TextEditingController _password;
-
-  // String _username = '';
 
   @override
   void initState() {
     super.initState();
     _username = TextEditingController();
+    _email = TextEditingController();
     _phone = TextEditingController();
     _password = TextEditingController();
-    // accData(); //mengambil dan menampilkan data pengguna
+    accData(); //mengambil dan menampilkan data pengguna
   }
 
-  // Future<void> accData() async {
-  //   DataSnapshot snapshot =
-  //         await _userRef.child(_currentUser.uid).once() as DataSnapshot;
-  //     if (snapshot.value != null) {
-  //       Map<dynamic, dynamic> userData = snapshot.value;
-  //       setState(() {
-  //         _username.text = userData['username'];
-  //         email.text = userData['email'];
-  //         _phone.text = userData['phone'];
-  //         _password.text = userData['password'];
-  //       });
-  //     }
-  // }
-  // Future<void> updateData() async {
-  //   await _userRef.child(_currentUser.uid).update({
-  //     'username': _username.text,
-  //     'phone': _phone.text,
-  //     'password': _password.text,
-  //   });
-  //   // ignore: use_build_context_synchronously
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(content: Text('Profile updated successfully')),
-  //   );
-  // }
+  Future<void> accData() async {
+    final snapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .where('username', isEqualTo: username)
+      .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final data = snapshot.docs.first.data();
+      setState(() {
+        _username.text = data['username'];
+        _email.text = data['email'];
+        _phone.text = data['phone'];
+        _password.text = data['password'];
+      });
+    }
+  }
+
+  Future<void> updateData() async {
+    final snapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .where('username', isEqualTo: username)
+      .get();
+
+    if (snapshot.docs.isNotEmpty) {
+      final doc = snapshot.docs.first.id;
+      await FirebaseFirestore.instance
+        .collection('users')
+        .doc(doc)
+        .update({
+          'username': _username.text,
+          'email': _email.text,
+          'phone': _phone.text,
+          'password': _password.text,
+        });
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile updated successfully')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +158,7 @@ class AccountPageState extends State<AccountPage> {
           
                           const SizedBox(height: 25),
                           TextField(
-                            controller: email,
+                            controller: _email,
                             keyboardType: TextInputType.emailAddress,
                             decoration: const InputDecoration(
                               labelText: 'Email address',
@@ -200,7 +219,44 @@ class AccountPageState extends State<AccountPage> {
                                 elevation: 15,
                               ),
                               onPressed: () {
-                                // updateData(); 
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+
+                                    return AlertDialog(
+                                      title: const Text(
+                                        'Konfirmasi Update Data Diri', 
+                                        textAlign: TextAlign.center
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: const [
+                                          Text('Yakin ingin merubah informasi?'),
+                                          SizedBox(height: 16.0),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          child: const Text('Cancel'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: const Text('Next'),
+                                          onPressed: () {
+                                            updateData();
+                                            Get.to(const WelcomePage());
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Please re-login')),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                               child: const Text(
                                 'UPDATE',

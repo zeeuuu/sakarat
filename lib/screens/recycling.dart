@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:input_quantity/input_quantity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
+import 'package:tubes/listvariables.dart' as listvariable;
 
 class RecyclePage extends StatefulWidget {
   final String username;
@@ -49,6 +51,11 @@ class RecyclePageState extends State<RecyclePage> {
     super.initState();
     quantities = List<int>.filled(title.length, 0);
   }
+  String getCurrentDate() {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    return formattedDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +69,17 @@ class RecyclePageState extends State<RecyclePage> {
     }
 
     //untuk menyimpan ke firebase
-    Future<void> saveDetail(List<String> selectedItems, int total) { 
-      // ignore: unused_local_variable
-      return detail.add({ //buat doc baru
-        'acc' : widget.username,
+    Future<void> saveDetail(List<String> selectedItems, int total) async {
+      listvariable.total = total;
+      listvariable.tanggal = getCurrentDate();
+      // listvariable.data++;
+
+      await detail.add({
+        'account': listvariable.username,
+        // 'data' : data,
         'selected_items': selectedItems,
         'total': total,
+        'tanggal': getCurrentDate(),
       });
     }
 

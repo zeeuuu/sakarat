@@ -1,4 +1,3 @@
-// ignore: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../login&regist/welcome.dart';
@@ -9,7 +8,7 @@ class DelAcc extends StatefulWidget {
   @override
   // ignore: library_private_types_in_public_api
   DelAccPageState createState() => DelAccPageState();
-
+ 
 }
 
 class DelAccPageState extends State<DelAcc> {

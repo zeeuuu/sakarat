@@ -58,7 +58,7 @@ class OrderPageState extends State<OrderPage> with TickerProviderStateMixin {
           body: TabBarView(
             controller: _tabController,
             children: [
-              const OngPage(),
+              OngPage(username: listvariable.username),
               HistoryPage(order: const {}, status: '', username: listvariable.username),
             ],
           ),

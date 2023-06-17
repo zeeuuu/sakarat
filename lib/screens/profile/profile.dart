@@ -27,7 +27,7 @@ class ProfileState extends StatelessWidget {
       child: Column(
         children: [
           
-          ProfilePict(),
+          const ProfilePict(),
           const SizedBox(height: 25),
           GestureDetector(
             onTap: () => Get.to(const PoinPage()),
@@ -199,10 +199,15 @@ class ProfileMenu extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
-class ProfilePict extends StatelessWidget {
-  ProfilePict({Key? key}) : super(key: key);
+class ProfilePict extends StatefulWidget {
+  const ProfilePict({Key? key}) : super(key: key);
 
+  @override
+  // ignore: library_private_types_in_public_api
+  _ProfilePictState createState() => _ProfilePictState();
+}
+
+class _ProfilePictState extends State<ProfilePict> {
   File? _pp;
   Future<void> _editProfile() async {
     final foto = ImagePicker();
@@ -243,7 +248,9 @@ class ProfilePict extends StatelessWidget {
                 backgroundColor: const Color(0xFFF5F6F9),
               ),
               onPressed: () {
-                _editProfile();
+                setState(() {
+                  _editProfile(); 
+                });
               },
               child: const Icon(Icons.camera_alt_outlined)
             ),   

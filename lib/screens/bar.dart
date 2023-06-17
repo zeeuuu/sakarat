@@ -3,12 +3,11 @@ import 'package:tubes/screens/homepage.dart';
 import 'package:tubes/screens/order/orders.dart';
 import 'package:tubes/screens/profile/profile.dart';          
 import 'package:tubes/screens/recycling.dart';
+import 'package:tubes/listvariables.dart' as listvariable;
 
 class BarPage extends StatefulWidget {
-  final String username;
-
   const BarPage({super.key, 
-    required this.username
+    required String username
   });
 
   @override
@@ -83,13 +82,13 @@ class BarPageState extends State<BarPage> {
   Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case "Recycle":
-        return MaterialPageRoute(builder: (context) {return RecyclePage(username: widget.username);});
+        return MaterialPageRoute(builder: (context) {return RecyclePage(username: listvariable.username);});
       case "Orders":
-        return MaterialPageRoute(builder: (context) {return OrderPage(username: widget.username);});
+        return MaterialPageRoute(builder: (context) {return OrderPage(username: listvariable.username);});
       case "Profile":
-        return MaterialPageRoute(builder: (context) {return ProfileState(username: widget.username);});
+        return MaterialPageRoute(builder: (context) {return ProfileState(username: listvariable.username);});
       default:
-        return MaterialPageRoute(builder: (context) {return HomePage(username: widget.username);});
+        return MaterialPageRoute(builder: (context) {return HomePage(username: listvariable.username);});
     }
   }
 
